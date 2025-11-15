@@ -1,0 +1,73 @@
+#include <iostream>
+using namespace std;
+class Node{
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int v){ data=v; left=right=NULL; }
+};
+
+Node* insertNode(Node* r,int v){
+    if(!r) return new Node(v);
+    if(v<r->data) r->left=insertNode(r->left,v);
+    else if(v>r->data) r->right=insertNode(r->right,v);
+    return r;
+}
+
+Node* searchRec(Node* r,int k){
+    if(!r||r->data==k) return r;
+    if(k<r->data) return searchRec(r->left,k);
+    return searchRec(r->right,k);
+}
+
+Node* searchIter(Node* r,int k){
+    while(r){
+        if(r->data==k) return r;
+        if(k<r->data) r=r->left;
+        else r=r->right;
+    }
+    return NULL;
+}
+
+Node* findMin(Node* r){ while(r&&r->left) r=r->left; return r; }
+Node* findMax(Node* r){ while(r&&r->right) r=r->right; return r; }
+
+Node* inorderSuccessor(Node* root,Node* t){
+    Node* s=NULL;
+    while(root){
+        if(t->data < root->data){ s=root; root=root->left; }
+        else root=root->right;
+    }
+    return s;
+}
+
+Node* inorderPredecessor(Node* root,Node* t){
+    Node* p=NULL;
+    while(root){
+        if(t->data > root->data){ p=root; root=root->right; }
+        else root=root->left;
+    }
+    return p;
+}
+int main(){
+    Node* root=NULL;
+    int a[]={40,20,10,30,60,50,70};
+    for(int x:a) root=insertNode(root,x);
+
+    cout<<(searchRec(root,30)?"Found":"Not Found")<<endl;
+    cout<<(searchIter(root,30)?"Found":"Not Found")<<endl;
+
+    cout<<findMin(root)->data<<endl;
+    cout<<findMax(root)->data<<endl;
+
+    Node* t=searchRec(root,40);
+    Node* s=inorderSuccessor(root,t);
+    Node* p=inorderPredecessor(root,t);
+
+    if(s) cout<<s->data<<endl;
+    else cout<<"None\n";
+
+    if(p) cout<<p->data<<endl;
+    else cout<<"None\n";
+}
