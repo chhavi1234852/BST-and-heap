@@ -1,0 +1,62 @@
+#include <iostream>
+using namespace std;
+class Node{
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int v){ data=v; left=right=NULL; }
+};
+Node* insertNode(Node* r,int v){
+    if(!r) return new Node(v);
+    if(v<r->data) r->left=insertNode(r->left,v);
+    else if(v>r->data) r->right=insertNode(r->right,v);
+    return r;
+}
+Node* findMin(Node* r){
+    while(r&&r->left) r=r->left;
+    return r;
+}
+Node* deleteNode(Node* r,int k){
+    if(!r) return NULL;
+    if(k<r->data) r->left=deleteNode(r->left,k);
+    else if(k>r->data) r->right=deleteNode(r->right,k);
+    else{
+        if(!r->left&&!r->right){ delete r; return NULL; }
+        else if(!r->left){ Node* t=r->right; delete r; return t; }
+        else if(!r->right){ Node* t=r->left; delete r; return t; }
+        Node* t=findMin(r->right);
+        r->data=t->data;
+        r->right=deleteNode(r->right,t->data);
+    }
+    return r;
+}
+int maxDepth(Node* r){
+    if(!r) return 0;
+    return 1+max(maxDepth(r->left),maxDepth(r->right));
+}
+int minDepth(Node* r){
+    if(!r) return 0;
+    int l=minDepth(r->left), rgt=minDepth(r->right);
+    if(!r->left) return 1+rgt;
+    if(!r->right) return 1+l;
+    return 1+min(l,rgt);
+}
+void inorder(Node* r){
+    if(!r) return;
+    inorder(r->left);
+    cout<<r->data<<" ";
+    inorder(r->right);
+}
+int main(){
+    Node* root=NULL;
+    int a[]={40,20,10,30,60,50,70};
+    for(int x:a) root=insertNode(root,x);
+    inorder(root);
+    cout<<endl;
+   root=deleteNode(root,20);
+    inorder(root);
+    cout<<endl;
+    cout<<maxDepth(root)<<endl;
+    cout<<minDepth(root)<<endl;
+}
